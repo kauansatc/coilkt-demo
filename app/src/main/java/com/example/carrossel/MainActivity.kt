@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +53,7 @@ data class CarouselImage(
 val imageList = listOf(
     CarouselImage("https://live.staticflickr.com/65535/54208276236_f0b750c0b1_o_d.png"),
     CarouselImage("https://live.staticflickr.com/65535/54102426319_9af09725b5_o_d.png"),
-    CarouselImage("https://cdn.eso.org/images/original/vlt-mw-potw.tif")
+    CarouselImage("https://i.imgur.com/4s0Ga2j.jpeg")
 )
 
 @Composable
@@ -68,7 +69,7 @@ fun ImageCarousel(modifier: Modifier = Modifier) {
                 val cacheDir = File(context.cacheDir, "image_cache")
                 coil3.disk.DiskCache.Builder()
                     .directory(cacheDir.toOkioPath())
-                    .maxSizeBytes(100L * 1024 * 1024)
+                    .maxSizeBytes(500L * 1024 * 1024)
                     .build()
             }
             .logger(DebugLogger())
@@ -81,6 +82,7 @@ fun ImageCarousel(modifier: Modifier = Modifier) {
         Text("Carrossel de Imagens", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Carrossel de imagens
         LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             // Imagens do imageList
             items(imageList) { image ->
@@ -122,15 +124,34 @@ fun ImageCarousel(modifier: Modifier = Modifier) {
                     modifier = Modifier.size(300.dp)
                 )
             }
-
         }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewCarousel() {
-    CarrosselTheme {
-        ImageCarousel()
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Imagens dos gatos abaixo do carrossel
+        Text("Imagens dos Gatos", style = MaterialTheme.typography.headlineSmall)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(context)
+                        .data(customImageUrl)
+                        .transformations(RoundedCornersTransformation(32f))
+                        .build(),
+                    imageLoader = imageLoader
+                ),
+                contentDescription = "Gatinho com cantos arredondados",
+                modifier = Modifier.size(300.dp)
+            )
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = customImageUrl,
+                    imageLoader = imageLoader
+                ),
+                contentDescription = "Gatinho normal",
+                modifier = Modifier.size(300.dp)
+            )
+        }
     }
 }
